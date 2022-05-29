@@ -1,16 +1,8 @@
 from flask import Flask,jsonify,request
 from demographicfiltering import output
 from contentfiltering import get_recommendations
+from storage import liked_articles,not_liked_articles,all_article
 import csv
-
-all_article = []
-with open("article.csv",encoding="utf8") as f:
-    reader = csv.reader(f)
-    data = list(reader)
-    all_article = data[1:]
-
-liked_movies = []
-not_liked_movies = []
 
 app = Flask(__name__)
 
@@ -25,13 +17,14 @@ def get_movie():
         "status":"success"
     })
 
-@app.route("/popular-articles")
+@app.route("/popular-movies")
 def popular_movies():
     article_data = []
     for article in output:
         _d = {
-            "data":article_data,
-            "status":"success"
+            'title':article[0],
+            "text":article[2],
+            "url":article[3]
         }
         article_data.append(_d)
     return jsonify({
@@ -42,8 +35,8 @@ def popular_movies():
 @app.route("/recomended-articles")
 def recomended_movies():
     all_recomended=[]
-    for likedmovies in liked_movies:
-        output = get_recommendations(likedmovies[19])
+    for likedarticle in liked_articles:
+        output = get_recommendations(likedarticle[19])
         for data in output:
             all_recomended.append(data)
 
@@ -53,8 +46,9 @@ def recomended_movies():
     article_data = []
     for article in all_recomended:
         _d = {
-            'title':article[11],
-            "text":article[12]
+            'title':article[0],
+            "text":article[1],
+            "url":article[2]
         }
         article_data.append(_d)
     return jsonify({

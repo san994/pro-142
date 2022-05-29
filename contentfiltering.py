@@ -10,7 +10,7 @@ count = CountVectorizer(stop_words='english')
 count_matrix = count.fit_transform(df['title'])
 cosine_sim = cosine_similarity(count_matrix,count_matrix)
 
-indices = pd.Series(df.index, index=df['title']) 
+indices = pd.Series(df.index, index=df['index']) 
 
 def get_recommendations(title): 
     idx = indices[title] 
@@ -18,6 +18,5 @@ def get_recommendations(title):
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True) 
     sim_scores = sim_scores[1:11] 
     article_indices = [i[0] for i in sim_scores] 
-    return df[['title', 'text']].iloc[article_indices].values.tolist()
+    return df[['title', 'text','url']].iloc[article_indices].values.tolist()
 
-print(get_recommendations("former google career coach shares a visual trick for figuring out what to do with your life"))
